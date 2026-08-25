@@ -899,7 +899,6 @@ const App = {
                     </div>
                 </div>
             `;
-      html += this.renderPizzaChart(porCategoria, totalSaidas);
     }
 
     // Group by date, most recent first
@@ -1025,6 +1024,8 @@ const App = {
                     </div>
                 </div>
             `;
+
+      html += this.renderPizzaChart(porCategoria, totalSaidas);
     }
 
     // Saldo do mês

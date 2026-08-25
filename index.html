@@ -16,7 +16,14 @@
     <div id="app">
         <!-- Header -->
         <header class="app-header">
-            <h1 class="app-logo">🐶 Tia Financeira</h1>
+            <div class="brand-group">
+                <h1 class="app-logo">🐶 Tia Financeira</h1>
+                <label class="theme-switch" for="theme-toggle" aria-label="Alternar para tema claro">
+                    <input id="theme-toggle" type="checkbox">
+                    <span class="theme-slider"></span>
+                    <span class="theme-label">Claro</span>
+                </label>
+            </div>
             <div class="header-actions">
                 <div class="month-nav">
                     <button id="btn-prev-month" class="btn-icon" aria-label="Mês anterior">
@@ -32,12 +39,6 @@
                         </svg>
                     </button>
                 </div>
-
-                <label class="theme-switch" for="theme-toggle" aria-label="Alternar para tema claro">
-                    <input id="theme-toggle" type="checkbox">
-                    <span class="theme-slider"></span>
-                    <span class="theme-label">Claro</span>
-                </label>
             </div>
         </header>
 
