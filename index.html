@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Controle financeiro pessoal — registre entradas e saídas de dinheiro de forma simples">
+    <title>Meu Financeiro — Controle Mensal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="app-header">
+            <h1 class="app-logo">💰 Meu Financeiro</h1>
+            <div class="month-nav">
+                <button id="btn-prev-month" class="btn-icon" aria-label="Mês anterior">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <button id="btn-current-month" class="btn-today" type="button">Este mês</button>
+                <span id="current-month-label" class="month-label">Agosto 2026</span>
+                <button id="btn-next-month" class="btn-icon" aria-label="Próximo mês">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tab-bar">
+            <button class="tab active" data-tab="lancamentos">Lançamentos</button>
+            <button class="tab" data-tab="resumo">Resumo</button>
+            <button class="tab" data-tab="categorias">Categorias</button>
+            <button class="tab" data-tab="calendario">Calendário</button>
+        </nav>
+
+        <!-- Summary Cards -->
+        <section id="summary-cards" class="summary-cards">
+            <div class="card card-entrada">
+                <span class="card-label">Entradas</span>
+                <span class="card-value" id="total-entradas">R$ 0,00</span>
+            </div>
+            <div class="card card-saida">
+                <span class="card-label">Saídas</span>
+                <span class="card-value" id="total-saidas">R$ 0,00</span>
+            </div>
+            <div class="card card-saldo">
+                <span class="card-label">Saldo</span>
+                <span class="card-value" id="total-saldo">R$ 0,00</span>
+            </div>
+        </section>
+
+        <!-- Tab Content -->
+        <main id="tab-content" class="tab-content">
+            <!-- Content rendered by JS -->
+        </main>
+
+        <!-- FAB (Floating Action Button) -->
+        <button id="fab-add" class="fab" aria-label="Novo lançamento" title="Novo lançamento">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <path d="M14 6V22M6 14H22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+            </svg>
+        </button>
+
+        <!-- Modal de Lançamento -->
+        <div id="modal-overlay" class="modal-overlay hidden">
+            <div class="modal" role="dialog" aria-labelledby="modal-title">
+                <div class="modal-header">
+                    <h2 id="modal-title">Novo Lançamento</h2>
+                    <button id="btn-close-modal" class="btn-icon btn-close" aria-label="Fechar">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                    </button>
+                </div>
+                <form id="form-lancamento" class="form">
+                    <!-- Tipo -->
+                    <div class="form-group">
+                        <label class="form-label">Tipo</label>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-btn" data-tipo="entrada" id="toggle-entrada">
+                                ↑ Entrada
+                            </button>
+                            <button type="button" class="toggle-btn active" data-tipo="saida" id="toggle-saida">
+                                ↓ Saída
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Valor -->
+                    <div class="form-group">
+                        <label class="form-label" for="input-valor">Valor (R$)</label>
+                        <input type="text" id="input-valor" class="form-input input-valor" placeholder="0,00" inputmode="decimal" required autocomplete="off">
+                    </div>
+
+                    <!-- Categoria -->
+                    <div class="form-group">
+                        <label class="form-label" for="select-categoria">Categoria</label>
+                        <select id="select-categoria" class="form-input" required>
+                            <option value="">Selecione...</option>
+                        </select>
+                    </div>
+
+                    <!-- Data -->
+                    <div class="form-group">
+                        <label class="form-label" for="input-data">Data</label>
+                        <input type="date" id="input-data" class="form-input" required>
+                    </div>
+
+                    <!-- Descrição -->
+                    <div class="form-group">
+                        <label class="form-label" for="input-descricao">Descrição <span class="optional">(opcional)</span></label>
+                        <input type="text" id="input-descricao" class="form-input" placeholder="Ex: Compras da semana" autocomplete="off">
+                    </div>
+
+                    <!-- Botão Salvar -->
+                    <button type="submit" id="btn-salvar" class="btn-primary">
+                        Salvar Lançamento
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de Categoria -->
+        <div id="modal-categoria-overlay" class="modal-overlay hidden">
+            <div class="modal" role="dialog" aria-labelledby="modal-categoria-title">
+                <div class="modal-header">
+                    <h2 id="modal-categoria-title">Nova Categoria</h2>
+                    <button id="btn-close-categoria-modal" class="btn-icon btn-close" aria-label="Fechar">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                    </button>
+                </div>
+                <form id="form-categoria" class="form">
+                    <div class="form-group">
+                        <label class="form-label">Tipo</label>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-btn" data-tipo="entrada" id="cat-toggle-entrada">
+                                ↑ Entrada
+                            </button>
+                            <button type="button" class="toggle-btn active" data-tipo="saida" id="cat-toggle-saida">
+                                ↓ Saída
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="input-categoria-nome">Nome</label>
+                        <input type="text" id="input-categoria-nome" class="form-input" placeholder="Ex: Mercado, Salário..." required autocomplete="off">
+                    </div>
+
+                    <button type="submit" id="btn-salvar-categoria" class="btn-primary">
+                        Salvar Categoria
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de Compromisso -->
+        <div id="modal-compromisso-overlay" class="modal-overlay hidden">
+            <div class="modal" role="dialog" aria-labelledby="modal-compromisso-title">
+                <div class="modal-header">
+                    <h2 id="modal-compromisso-title">Novo Compromisso</h2>
+                    <button id="btn-close-compromisso-modal" class="btn-icon btn-close" aria-label="Fechar">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                    </button>
+                </div>
+                <form id="form-compromisso" class="form">
+                    <div class="form-group">
+                        <label class="form-label">Tipo</label>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-btn" data-tipo="recebimento" id="compromisso-toggle-recebimento">
+                                ↑ Recebimento
+                            </button>
+                            <button type="button" class="toggle-btn active" data-tipo="cobranca" id="compromisso-toggle-cobranca">
+                                ↓ Cobrança
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="input-compromisso-titulo">Título</label>
+                        <input type="text" id="input-compromisso-titulo" class="form-input" placeholder="Ex: Aluguel, Salário, Conta" required autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="input-compromisso-valor">Valor (R$)</label>
+                        <input type="text" id="input-compromisso-valor" class="form-input input-valor" placeholder="0,00" inputmode="decimal" required autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="input-compromisso-data">Data</label>
+                        <input type="date" id="input-compromisso-data" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="input-compromisso-nota">Observações <span class="optional">(opcional)</span></label>
+                        <textarea id="input-compromisso-nota" class="form-input form-textarea" rows="3" placeholder="Ex: pagar via Pix, receber após o dia 10..."></textarea>
+                    </div>
+
+                    <button type="submit" id="btn-salvar-compromisso" class="btn-primary">
+                        Salvar Compromisso
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>
