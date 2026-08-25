@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Controle financeiro pessoal — registre entradas e saídas de dinheiro de forma simples">
-    <title>Meu Financeiro — Controle Mensal</title>
+    <title>Tia Financeira — Controle Mensal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,29 +16,57 @@
     <div id="app">
         <!-- Header -->
         <header class="app-header">
-            <h1 class="app-logo">💰 Meu Financeiro</h1>
-            <div class="month-nav">
-                <button id="btn-prev-month" class="btn-icon" aria-label="Mês anterior">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </button>
-                <button id="btn-current-month" class="btn-today" type="button">Este mês</button>
-                <span id="current-month-label" class="month-label">Agosto 2026</span>
-                <button id="btn-next-month" class="btn-icon" aria-label="Próximo mês">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </button>
+            <h1 class="app-logo">🐶 Tia Financeira</h1>
+            <div class="header-actions">
+                <div class="month-nav">
+                    <button id="btn-prev-month" class="btn-icon" aria-label="Mês anterior">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <button id="btn-current-month" class="btn-today" type="button">Este mês</button>
+                    <span id="current-month-label" class="month-label">Agosto 2026</span>
+                    <button id="btn-next-month" class="btn-icon" aria-label="Próximo mês">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+
+                <label class="theme-switch" for="theme-toggle" aria-label="Alternar para tema claro">
+                    <input id="theme-toggle" type="checkbox">
+                    <span class="theme-slider"></span>
+                    <span class="theme-label">Claro</span>
+                </label>
             </div>
         </header>
 
         <!-- Navigation Tabs -->
-        <nav class="tab-bar">
-            <button class="tab active" data-tab="lancamentos">Lançamentos</button>
-            <button class="tab" data-tab="resumo">Resumo</button>
-            <button class="tab" data-tab="categorias">Categorias</button>
-            <button class="tab" data-tab="calendario">Calendário</button>
+        <nav class="tab-bar" aria-label="Menu principal">
+            <button class="tab active" data-tab="lancamentos" aria-label="Lançamentos">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-9Zm3.5 1.5h9M8 12h8M8 15h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Lançamentos</span>
+            </button>
+            <button class="tab" data-tab="resumo" aria-label="Resumo">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 18V9m6 9V5m6 13v-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                <span>Resumo</span>
+            </button>
+            <button class="tab" data-tab="categorias" aria-label="Categorias">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 7h10a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Zm0 0 1.5-2h7L17 7M9 12h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Categorias</span>
+            </button>
+            <button class="tab" data-tab="calendario" aria-label="Calendário">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 4v2M17 4v2M5 9h14M7 6h10a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Calendário</span>
+            </button>
         </nav>
 
         <!-- Summary Cards -->

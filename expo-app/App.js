@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 
-const APP_URL = "https://SEU-PROJETO.vercel.app";
+const APP_URL = "";
 
 export default function App() {
   return (

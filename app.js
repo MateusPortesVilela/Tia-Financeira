@@ -61,8 +61,29 @@ const App = {
 
   async init() {
     await this.loadData();
+    this.initTheme();
     this.bindEvents();
     this.render();
+  },
+
+  // ================================================================
+  //  THEME
+  // ================================================================
+
+  initTheme() {
+    const savedTheme = localStorage.getItem("meuFinanceiro-theme");
+    const isLight = savedTheme === "light";
+    const toggle = document.getElementById("theme-toggle");
+
+    document.body.classList.toggle("theme-light", isLight);
+    if (toggle) toggle.checked = isLight;
+  },
+
+  setTheme(isLight) {
+    document.body.classList.toggle("theme-light", isLight);
+    const toggle = document.getElementById("theme-toggle");
+    if (toggle) toggle.checked = isLight;
+    localStorage.setItem("meuFinanceiro-theme", isLight ? "light" : "dark");
   },
 
   // ================================================================
@@ -126,6 +147,13 @@ const App = {
   // ================================================================
 
   bindEvents() {
+    const themeToggle = document.getElementById("theme-toggle");
+    if (themeToggle) {
+      themeToggle.addEventListener("change", (e) => {
+        this.setTheme(e.target.checked);
+      });
+    }
+
     // Month navigation
     document
       .getElementById("btn-prev-month")
@@ -1072,7 +1100,11 @@ const App = {
   },
 
   renderHistoricoMeses(historico = this.getHistoricoMeses()) {
-    if (!historico.some((item) => item.totalLancamentos > 0)) {
+    const historicoFiltrado = historico.filter(
+      (item) => item.totalLancamentos > 0,
+    );
+
+    if (historicoFiltrado.length === 0) {
       return "";
     }
 
@@ -1080,7 +1112,7 @@ const App = {
             <div class="resumo-section">
                 <div class="resumo-section-title">📅 Histórico entre meses</div>
                 <div class="historico-list">
-                    ${historico
+                    ${historicoFiltrado
                       .map(
                         (item) => `
                         <div class="historico-item ${item.isCurrent ? "current" : ""}">
@@ -1374,7 +1406,7 @@ const App = {
       });
     }
 
-    return months;
+    return months.filter((item) => item.totalLancamentos > 0);
   },
 
   getCompromissosCurrentMonth() {
