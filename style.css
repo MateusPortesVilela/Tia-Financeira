@@ -91,6 +91,13 @@ body {
     color var(--transition-normal);
 }
 
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  background-attachment: fixed;
+}
+
 body.theme-light {
   --bg-primary: #edf4ff;
   --bg-secondary: rgba(255, 255, 255, 0.66);
@@ -141,9 +148,13 @@ body::before {
 #app {
   position: relative;
   z-index: 1;
-  max-width: 440px;
+  width: min(100%, 430px);
+  min-height: 100vh;
   margin: 0 auto;
-  padding: 0 12px 100px;
+  padding: 0 12px 104px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .app-header {
@@ -153,12 +164,15 @@ body::before {
   gap: 10px;
   padding: 18px 0 12px;
   margin-bottom: 8px;
+  width: 100%;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-md);
+  width: 100%;
 }
 
 .app-logo {
@@ -174,7 +188,9 @@ body::before {
 .month-nav {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-sm);
+  flex: 1;
 }
 
 .theme-switch {
@@ -317,15 +333,15 @@ body::before {
 }
 
 .tab-bar {
-  position: sticky;
+  position: fixed;
+  left: 50%;
   bottom: 14px;
+  transform: translateX(-50%);
   z-index: 30;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
-  width: calc(100% - 12px);
-  max-width: 420px;
-  margin: 0 auto 18px;
+  width: min(96vw, 420px);
   padding: 8px 8px 10px;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 26px;
@@ -1238,24 +1254,27 @@ body.theme-light .btn-icon {
 @media (max-width: 480px) {
   #app {
     max-width: 100%;
-    padding: 0 10px 88px;
+    padding: 0 10px 110px;
   }
 
   .app-header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
     padding-top: 14px;
+    text-align: center;
   }
 
   .header-actions {
     width: 100%;
-    justify-content: space-between;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .month-nav {
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
   }
 
   .summary-cards {
@@ -1271,7 +1290,7 @@ body.theme-light .btn-icon {
   }
 
   .fab {
-    bottom: 20px;
+    bottom: 92px;
     right: 20px;
   }
 
