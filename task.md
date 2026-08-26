@@ -23,4 +23,4 @@
 
 ## Etapa 6: Alertas Visuais
 
-- [ ] Alertas ao abrir o app
+- [x] Alertas ao abrir o app

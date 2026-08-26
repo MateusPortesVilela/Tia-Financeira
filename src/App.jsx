@@ -179,6 +179,7 @@ function App() {
   const [isLancamentoModalOpen, setIsLancamentoModalOpen] = useState(false);
   const [isCategoriaModalOpen, setIsCategoriaModalOpen] = useState(false);
   const [isCompromissoModalOpen, setIsCompromissoModalOpen] = useState(false);
+  const [isOpeningAlertVisible, setIsOpeningAlertVisible] = useState(true);
   const [editingLancamentoId, setEditingLancamentoId] = useState(null);
   const [editingCategoriaId, setEditingCategoriaId] = useState(null);
   const [editingCompromissoId, setEditingCompromissoId] = useState(null);
@@ -225,6 +226,15 @@ function App() {
     [compromissos, currentMonth, currentYear],
   );
 
+  const compromissosCriticos = useMemo(
+    () =>
+      compromissos.filter((compromisso) => {
+        const status = getCompromissoStatus(compromisso);
+        return status.className === "vencido" || status.className === "hoje";
+      }),
+    [compromissos],
+  );
+
   const totalEntradas = lancamentosMes
     .filter((l) => l.tipo === "entrada")
     .reduce((sum, l) => sum + Number(l.valor || 0), 0);
@@ -255,6 +265,17 @@ function App() {
     const today = new Date();
     setCurrentMonth(today.getMonth());
     setCurrentYear(today.getFullYear());
+  }
+
+  function changeTab(nextTab) {
+    if (nextTab === currentTab) return;
+
+    if (typeof document.startViewTransition === "function") {
+      document.startViewTransition(() => setCurrentTab(nextTab));
+      return;
+    }
+
+    setCurrentTab(nextTab);
   }
 
   function openLancamentoModal(item = null) {
@@ -648,6 +669,22 @@ function App() {
       );
     }
 
+    const totalEntradas = filtroResumo.totalEntradas || 1;
+    const pizzaSegmentsEntradas = categoriaEntradas.map((categoria, index) => ({
+      ...categoria,
+      color: ["#34d399", "#60a5fa", "#fbbf24", "#a78bfa", "#fb7185", "#2dd4bf"][
+        index % 6
+      ],
+    }));
+    let startEntradas = 0;
+    const segsEntradas = pizzaSegmentsEntradas.map((segment) => {
+      const percent = (segment.total / totalEntradas) * 100;
+      const end = startEntradas + percent;
+      const result = `${segment.color} ${startEntradas}% ${end}%`;
+      startEntradas = end;
+      return result;
+    });
+
     const total = filtroResumo.totalSaidas || 1;
     const pizzaSegments = categoriaSaidas.map((categoria, index) => ({
       ...categoria,
@@ -683,6 +720,46 @@ function App() {
               <span className="saldo-positivo">
                 {formatCurrency(filtroResumo.totalEntradas)}
               </span>
+            </div>
+
+            <div className="resumo-section pizza-section">
+              <div className="resumo-section-title">
+                Distribuição das entradas
+              </div>
+              <div className="pizza-chart-layout">
+                <div
+                  className="pizza-chart"
+                  style={{
+                    background: `conic-gradient(${segsEntradas.join(", ")})`,
+                  }}
+                  aria-label="Distribuição das entradas por categoria"
+                >
+                  <div className="pizza-chart-center">
+                    <span>Total</span>
+                    <strong>
+                      {formatCurrency(filtroResumo.totalEntradas)}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="pizza-legend">
+                  {pizzaSegmentsEntradas.map((item) => (
+                    <div key={item.nome} className="pizza-legend-item">
+                      <span
+                        className="pizza-legend-color"
+                        style={{ background: item.color }}
+                      ></span>
+                      <span className="pizza-legend-name">{item.nome}</span>
+                      <span className="pizza-legend-percent">
+                        {((item.total / totalEntradas) * 100)
+                          .toFixed(1)
+                          .replace(".", ",")}
+                        %
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -762,35 +839,47 @@ function App() {
         {historicoMeses.length > 0 && (
           <div className="resumo-section">
             <div className="resumo-section-title">📅 Histórico entre meses</div>
-            <div className="historico-list">
-              {historicoMeses.map((item) => (
-                <div
-                  key={item.label}
-                  className={`historico-item ${item.isCurrent ? "current" : ""}`}
-                >
-                  <div className="historico-main">
-                    <span className="historico-label">{item.label}</span>
-                    <span className="historico-meta">
-                      {item.totalLancamentos} lançamento
-                      {item.totalLancamentos === 1 ? "" : "s"}
-                    </span>
-                  </div>
-                  <div className="historico-values">
-                    <span className="historico-valor entrada">
-                      + {formatCurrency(item.entradas)}
-                    </span>
-                    <span className="historico-valor saida">
-                      − {formatCurrency(item.saidas)}
-                    </span>
-                    <span
-                      className={`historico-saldo ${item.saldo >= 0 ? "positivo" : "negativo"}`}
-                    >
-                      {item.saldo >= 0 ? "+ " : "- "}
-                      {formatCurrency(Math.abs(item.saldo))}
-                    </span>
-                  </div>
-                </div>
-              ))}
+            <div className="historico-table-wrapper">
+              <table className="historico-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Tipo</th>
+                    {historicoMeses.map((item) => (
+                      <th
+                        key={item.label}
+                        scope="col"
+                        className={item.isCurrent ? "current" : ""}
+                      >
+                        {item.label}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Recebimentos</th>
+                    {historicoMeses.map((item) => (
+                      <td
+                        key={`${item.label}-entradas`}
+                        className="historico-valor entrada"
+                      >
+                        + {formatCurrency(item.entradas)}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr className="historico-divider">
+                    <th scope="row">Cobranças</th>
+                    {historicoMeses.map((item) => (
+                      <td
+                        key={`${item.label}-saidas`}
+                        className="historico-valor saida"
+                      >
+                        − {formatCurrency(item.saidas)}
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         )}
@@ -1147,8 +1236,8 @@ function App() {
 
       <nav className="tab-bar" aria-label="Menu principal">
         {[
-          { key: "lancamentos", label: "Lançamentos" },
           { key: "resumo", label: "Resumo" },
+          { key: "lancamentos", label: "Lançamentos" },
           { key: "categorias", label: "Categorias" },
           { key: "calendario", label: "Calendário" },
         ].map((tab) => (
@@ -1156,7 +1245,7 @@ function App() {
             key={tab.key}
             type="button"
             className={`tab ${currentTab === tab.key ? "active" : ""}`}
-            onClick={() => setCurrentTab(tab.key)}
+            onClick={() => changeTab(tab.key)}
           >
             <span aria-hidden="true">
               {tab.key === "lancamentos"
@@ -1171,6 +1260,47 @@ function App() {
           </button>
         ))}
       </nav>
+
+      {isOpeningAlertVisible && compromissosCriticos.length > 0 && (
+        <section className="opening-alert" role="alert" aria-live="polite">
+          <div className="opening-alert-icon" aria-hidden="true">
+            !
+          </div>
+          <div className="opening-alert-content">
+            <strong>
+              {compromissosCriticos.length === 1
+                ? "Você tem um compromisso vencido ou vencendo hoje"
+                : `Você tem ${compromissosCriticos.length} compromissos vencidos ou vencendo hoje`}
+            </strong>
+            <span>
+              {compromissosCriticos
+                .slice(0, 2)
+                .map((compromisso) => compromisso.titulo)
+                .join(" • ")}
+              {compromissosCriticos.length > 2 ? " • e outros" : ""}
+            </span>
+            <button
+              type="button"
+              className="opening-alert-action"
+              onClick={() => {
+                changeTab("calendario");
+                setIsOpeningAlertVisible(false);
+              }}
+            >
+              Ver compromissos
+            </button>
+          </div>
+          <button
+            type="button"
+            className="opening-alert-close"
+            aria-label="Fechar alerta"
+            title="Fechar alerta"
+            onClick={() => setIsOpeningAlertVisible(false)}
+          >
+            ×
+          </button>
+        </section>
+      )}
 
       {currentTab !== "categorias" && (
         <section className="summary-cards">
