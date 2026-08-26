@@ -402,6 +402,11 @@ select {
   color: var(--saida);
 }
 
+.card-saida {
+  border-color: var(--saida-border);
+  background: var(--saida-bg);
+}
+
 .card-saldo.positive .card-value {
   color: var(--entrada);
 }
