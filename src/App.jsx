@@ -1158,14 +1158,14 @@ function App() {
             className={`tab ${currentTab === tab.key ? "active" : ""}`}
             onClick={() => setCurrentTab(tab.key)}
           >
-            <span>
+            <span aria-hidden="true">
               {tab.key === "lancamentos"
-                ? "🧾"
+                ? "🧾︎"
                 : tab.key === "resumo"
-                  ? "📊"
+                  ? "📊︎"
                   : tab.key === "categorias"
-                    ? "🏷️"
-                    : "📅"}
+                    ? "🏷︎"
+                    : "📅︎"}
             </span>
             <span>{tab.label}</span>
           </button>
