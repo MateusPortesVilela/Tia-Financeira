@@ -852,47 +852,43 @@ function App() {
         {historicoMeses.length > 0 && (
           <div className="resumo-section">
             <div className="resumo-section-title">📅 Histórico entre meses</div>
-            <div className="historico-table-wrapper">
-              <table className="historico-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Tipo</th>
-                    {historicoMeses.map((item) => (
-                      <th
-                        key={item.label}
-                        scope="col"
-                        className={item.isCurrent ? "current" : ""}
-                      >
-                        {item.label}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">Recebimentos</th>
-                    {historicoMeses.map((item) => (
-                      <td
-                        key={`${item.label}-entradas`}
-                        className="historico-valor entrada"
-                      >
-                        + {formatCurrency(item.entradas)}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="historico-divider">
-                    <th scope="row">Cobranças</th>
-                    {historicoMeses.map((item) => (
-                      <td
-                        key={`${item.label}-saidas`}
-                        className="historico-valor saida"
-                      >
-                        − {formatCurrency(item.saidas)}
-                      </td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
+            <div className="historico-chart-wrapper">
+              <div className="historico-chart-legend" aria-hidden="true">
+                <span><i className="historico-legend-swatch entrada"></i>Recebimentos</span>
+                <span><i className="historico-legend-swatch saida"></i>Cobranças</span>
+              </div>
+              <div
+                className="historico-chart"
+                role="img"
+                aria-label="Gráfico de colunas com recebimentos e cobranças dos últimos meses"
+              >
+                {historicoMeses.map((item) => {
+                  const maiorValor = Math.max(
+                    ...historicoMeses.flatMap((mes) => [mes.entradas, mes.saidas]),
+                    1,
+                  );
+                  const nomeMes = item.label.split(" ")[0];
+                  return (
+                    <div
+                      key={item.label}
+                      className={`historico-column-group ${item.isCurrent ? "current" : ""}`}
+                      title={`${item.label}: recebimentos ${formatCurrency(item.entradas)}, cobranças ${formatCurrency(item.saidas)}`}
+                    >
+                      <div className="historico-bars">
+                        <span
+                          className="historico-bar entrada"
+                          style={{ height: `${(item.entradas / maiorValor) * 100}%` }}
+                        ></span>
+                        <span
+                          className="historico-bar saida"
+                          style={{ height: `${(item.saidas / maiorValor) * 100}%` }}
+                        ></span>
+                      </div>
+                      <span className="historico-column-label">{nomeMes}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}

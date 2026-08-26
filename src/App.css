@@ -652,53 +652,92 @@ select {
   border-radius: 50%;
 }
 
-.historico-table-wrapper {
+.historico-chart-wrapper {
   overflow-x: auto;
 }
 
-.historico-table {
-  width: 100%;
-  min-width: 560px;
-  border-collapse: collapse;
-  font-size: 0.76rem;
+.historico-chart-legend {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
 }
 
-.historico-table th,
-.historico-table td {
-  padding: 10px 8px;
-  text-align: right;
+.historico-chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.historico-legend-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+}
+
+.historico-legend-swatch.entrada,
+.historico-bar.entrada {
+  background: var(--entrada);
+}
+
+.historico-legend-swatch.saida,
+.historico-bar.saida {
+  background: var(--saida);
+}
+
+.historico-chart {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 360px;
+  height: 190px;
+  padding: 12px 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.historico-column-group {
+  display: flex;
+  flex: 1 0 44px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  min-width: 44px;
+  border-radius: 8px 8px 0 0;
+}
+
+.historico-column-group.current {
+  background: rgba(139, 124, 246, 0.1);
+}
+
+.historico-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  height: 145px;
+}
+
+.historico-bar {
+  width: 12px;
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+}
+
+.historico-column-label {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.historico-table th:first-child,
-.historico-table td:first-child {
-  width: 1%;
-  text-align: left;
-}
-
-.historico-table thead th {
-  color: var(--text-secondary);
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-
-.historico-table thead th.current {
+.historico-column-group.current .historico-column-label {
   color: var(--text-primary);
-}
-
-.historico-table tbody th {
-  color: var(--text-primary);
-  font-weight: 700;
-}
-
-.historico-table tbody tr:first-child th,
-.historico-table tbody tr:first-child td {
-  padding-top: 12px;
-}
-
-.historico-divider th,
-.historico-divider td {
-  border-top: 1px solid var(--border);
 }
 
 .categorias-hint {
