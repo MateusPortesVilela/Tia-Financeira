@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import "./App.css";
+import { GerarRelatorioMensalButton } from "./components/GerarRelatorioMensalButton";
 
 const MESES = [
   "Janeiro",
@@ -672,11 +673,20 @@ function App() {
 
     if (lancamentosMes.length === 0 && historicoMeses.length === 0) {
       return (
-        <div className="empty-state">
-          <div className="empty-state-icon">📊</div>
-          <div className="empty-state-title">Sem dados para o resumo</div>
-          <div className="empty-state-text">
-            Adicione lançamentos para ver o resumo por categoria deste mês.
+        <div className="resumo-empty-content">
+          <div className="empty-state">
+            <div className="empty-state-icon">📊</div>
+            <div className="empty-state-title">Sem dados para o resumo</div>
+            <div className="empty-state-text">
+              Adicione lançamentos para ver o resumo por categoria deste mês.
+            </div>
+          </div>
+          <div className="resumo-report-action">
+            <GerarRelatorioMensalButton
+              mes={currentMonth}
+              ano={currentYear}
+              label="Formatar em PDF"
+            />
           </div>
         </div>
       );
@@ -904,6 +914,14 @@ function App() {
             </div>
           </div>
         )}
+
+        <div className="resumo-report-action">
+          <GerarRelatorioMensalButton
+            mes={currentMonth}
+            ano={currentYear}
+            label="Formatar em PDF"
+          />
+        </div>
       </div>
     );
   }
