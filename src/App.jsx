@@ -1227,18 +1227,18 @@ function App() {
           >
             <button
               type="button"
+              className="btn-today"
+              onClick={goToCurrentMonth}
+            >
+              Este mês
+            </button>
+            <button
+              type="button"
               className="btn-icon"
               onClick={() => changeMonth(-1)}
               aria-label="Mês anterior"
             >
               ‹
-            </button>
-            <button
-              type="button"
-              className="btn-today"
-              onClick={goToCurrentMonth}
-            >
-              Este mês
             </button>
             <span className="month-label">
               {MESES[currentMonth]} {currentYear}
