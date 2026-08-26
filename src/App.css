@@ -11,6 +11,8 @@
   --accent: #8b7cf6;
   --accent-hover: #a89afc;
   --entrada: #3fb950;
+  --entrada-summary: #6dcc8a;
+  --entrada-summary-bg: rgba(109, 204, 138, 0.1);
   --entrada-bg: rgba(63, 185, 80, 0.12);
   --entrada-border: rgba(63, 185, 80, 0.22);
   --saida: #f85149;
@@ -35,6 +37,8 @@
   --text-secondary: #475569;
   --text-tertiary: #64748b;
   --entrada: #1f9d55;
+  --entrada-summary: #278b59;
+  --entrada-summary-bg: rgba(39, 139, 89, 0.09);
   --entrada-bg: rgba(31, 157, 85, 0.09);
   --entrada-border: rgba(31, 157, 85, 0.18);
   --saida: #dc2626;
@@ -357,7 +361,7 @@ select {
 
 .summary-cards {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin-top: 10px;
 }
@@ -386,7 +390,12 @@ select {
 }
 
 .card-entrada .card-value {
-  color: var(--entrada);
+  color: var(--entrada-summary);
+}
+
+.card-entrada {
+  border-color: var(--entrada-summary);
+  background: var(--entrada-summary-bg);
 }
 
 .card-saida .card-value {
@@ -399,6 +408,10 @@ select {
 
 .card-saldo.negative .card-value {
   color: var(--saida);
+}
+
+.card-saldo {
+  grid-column: 1 / -1;
 }
 
 .tab-content {
@@ -1056,10 +1069,6 @@ select {
 }
 
 @media (max-width: 520px) {
-  .summary-cards {
-    grid-template-columns: 1fr;
-  }
-
   .pizza-chart-layout {
     grid-template-columns: 1fr;
   }
