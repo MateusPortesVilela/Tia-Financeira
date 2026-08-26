@@ -854,8 +854,13 @@ function App() {
             <div className="resumo-section-title">📅 Histórico entre meses</div>
             <div className="historico-chart-wrapper">
               <div className="historico-chart-legend" aria-hidden="true">
-                <span><i className="historico-legend-swatch entrada"></i>Recebimentos</span>
-                <span><i className="historico-legend-swatch saida"></i>Cobranças</span>
+                <span>
+                  <i className="historico-legend-swatch entrada"></i>
+                  Recebimentos
+                </span>
+                <span>
+                  <i className="historico-legend-swatch saida"></i>Cobranças
+                </span>
               </div>
               <div
                 className="historico-chart"
@@ -864,7 +869,10 @@ function App() {
               >
                 {historicoMeses.map((item) => {
                   const maiorValor = Math.max(
-                    ...historicoMeses.flatMap((mes) => [mes.entradas, mes.saidas]),
+                    ...historicoMeses.flatMap((mes) => [
+                      mes.entradas,
+                      mes.saidas,
+                    ]),
                     1,
                   );
                   const nomeMes = item.label.split(" ")[0];
@@ -877,11 +885,15 @@ function App() {
                       <div className="historico-bars">
                         <span
                           className="historico-bar entrada"
-                          style={{ height: `${(item.entradas / maiorValor) * 100}%` }}
+                          style={{
+                            height: `${(item.entradas / maiorValor) * 100}%`,
+                          }}
                         ></span>
                         <span
                           className="historico-bar saida"
-                          style={{ height: `${(item.saidas / maiorValor) * 100}%` }}
+                          style={{
+                            height: `${(item.saidas / maiorValor) * 100}%`,
+                          }}
                         ></span>
                       </div>
                       <span className="historico-column-label">{nomeMes}</span>
