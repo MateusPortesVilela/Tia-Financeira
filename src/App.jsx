@@ -672,7 +672,7 @@ function App() {
     const totalEntradas = filtroResumo.totalEntradas || 1;
     const pizzaSegmentsEntradas = categoriaEntradas.map((categoria, index) => ({
       ...categoria,
-      color: ["#34d399", "#60a5fa", "#fbbf24", "#a78bfa", "#fb7185", "#2dd4bf"][
+      color: ["#bbf7d0", "#86efac", "#4ade80", "#22c55e", "#16a34a", "#166534"][
         index % 6
       ],
     }));
@@ -688,7 +688,7 @@ function App() {
     const total = filtroResumo.totalSaidas || 1;
     const pizzaSegments = categoriaSaidas.map((categoria, index) => ({
       ...categoria,
-      color: ["#8b7cf6", "#34d399", "#fbbf24", "#f87171", "#60a5fa", "#fb7185"][
+      color: ["#fecaca", "#fca5a5", "#f87171", "#ef4444", "#dc2626", "#991b1b"][
         index % 6
       ],
     }));
