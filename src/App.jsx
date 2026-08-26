@@ -200,19 +200,6 @@ function App() {
     localStorage.setItem("tia-financeira-theme", theme);
   }, [theme]);
 
-  useEffect(() => {
-    if (compromissosCriticos.length === 0) {
-      setIsOpeningAlertVisible(false);
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setIsOpeningAlertVisible(true);
-    }, 1000);
-
-    return () => window.clearTimeout(timer);
-  }, [compromissosCriticos.length]);
-
   const lancamentosMes = useMemo(
     () =>
       lancamentos
@@ -247,6 +234,19 @@ function App() {
       }),
     [compromissos],
   );
+
+  useEffect(() => {
+    if (compromissosCriticos.length === 0) {
+      setIsOpeningAlertVisible(false);
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setIsOpeningAlertVisible(true);
+    }, 1000);
+
+    return () => window.clearTimeout(timer);
+  }, [compromissosCriticos.length]);
 
   const totalEntradas = lancamentosMes
     .filter((l) => l.tipo === "entrada")
