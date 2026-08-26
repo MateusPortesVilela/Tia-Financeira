@@ -179,7 +179,7 @@ function App() {
   const [isLancamentoModalOpen, setIsLancamentoModalOpen] = useState(false);
   const [isCategoriaModalOpen, setIsCategoriaModalOpen] = useState(false);
   const [isCompromissoModalOpen, setIsCompromissoModalOpen] = useState(false);
-  const [isOpeningAlertVisible, setIsOpeningAlertVisible] = useState(true);
+  const [isOpeningAlertVisible, setIsOpeningAlertVisible] = useState(false);
   const [editingLancamentoId, setEditingLancamentoId] = useState(null);
   const [editingCategoriaId, setEditingCategoriaId] = useState(null);
   const [editingCompromissoId, setEditingCompromissoId] = useState(null);
@@ -199,6 +199,19 @@ function App() {
   useEffect(() => {
     localStorage.setItem("tia-financeira-theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (compromissosCriticos.length === 0) {
+      setIsOpeningAlertVisible(false);
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setIsOpeningAlertVisible(true);
+    }, 1000);
+
+    return () => window.clearTimeout(timer);
+  }, [compromissosCriticos.length]);
 
   const lancamentosMes = useMemo(
     () =>
