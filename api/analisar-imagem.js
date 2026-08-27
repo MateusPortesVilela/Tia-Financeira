@@ -1,12 +1,3 @@
-import express from "express";
-import cors from "cors";
-
-const app = express();
-const PORT = process.env.PORT || 8787;
-
-app.use(cors());
-app.use(express.json({ limit: "10mb" }));
-
 function normalizeAnthropicResponse(rawText) {
   if (!rawText) {
     return { lancamentos: [] };
@@ -30,7 +21,7 @@ function normalizeAnthropicResponse(rawText) {
         if (Array.isArray(parsed?.lancamentos)) return parsed;
         if (Array.isArray(parsed)) return { lancamentos: parsed };
       } catch {
-        // ignora e cai para fallback
+        // fallback silencioso
       }
     }
   }
@@ -38,9 +29,24 @@ function normalizeAnthropicResponse(rawText) {
   return { lancamentos: [] };
 }
 
-app.post("/api/analisar-imagem", async (req, res) => {
+export default async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      error: "Método não permitido.",
+      lancamentos: [],
+    });
+  }
+
   try {
-    const { imageBase64, mimeType, filename, prompt } = req.body || {};
+    const { imageBase64, mimeType, prompt } = req.body || {};
 
     if (!imageBase64) {
       return res.status(400).json({
@@ -112,8 +118,7 @@ Se não encontrar nada, retorne {"lancamentos":[]}`;
     const answer =
       payload?.content?.find((item) => item?.type === "text")?.text || "{}";
 
-    const json = normalizeAnthropicResponse(answer);
-    return res.json(json);
+    return res.status(200).json(normalizeAnthropicResponse(answer));
   } catch (error) {
     console.error("Erro ao analisar imagem:", error);
     return res.status(500).json({
@@ -121,16 +126,4 @@ Se não encontrar nada, retorne {"lancamentos":[]}`;
       lancamentos: [],
     });
   }
-});
-
-app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, service: "tia-financeira-image-analysis" });
-});
-
-if (process.env.NODE_ENV !== "production") {
-  app.listen(PORT, () => {
-    console.log(`API de análise de imagem rodando em http://localhost:${PORT}`);
-  });
 }
-
-export default app;
