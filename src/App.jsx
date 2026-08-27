@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import "./App.css";
 import { GerarRelatorioMensalButton } from "./components/GerarRelatorioMensalButton";
+import { ImpressaoTab } from "./components/ImpressaoTab";
+import { db } from "../firebase-config.js";
 
 const MESES = [
   "Janeiro",
@@ -198,6 +201,43 @@ function App() {
   }, [categorias, lancamentos, compromissos]);
 
   useEffect(() => {
+    let isMounted = true;
+
+    async function syncFirestoreCategorias() {
+      try {
+        const snapshot = await getDocs(collection(db, "categorias"));
+        const firestoreCategorias = snapshot.docs.map((item) => ({
+          id: item.id,
+          ...item.data(),
+        }));
+
+        if (!firestoreCategorias.length || !isMounted) return;
+
+        setCategorias((prev) => {
+          const map = new Map();
+
+          [...prev, ...firestoreCategorias].forEach((categoria) => {
+            const key = `${categoria.tipo}:${categoria.nome.toLowerCase()}`;
+            if (!map.has(key)) {
+              map.set(key, categoria);
+            }
+          });
+
+          return [...map.values()];
+        });
+      } catch (error) {
+        console.warn("Categorias do Firestore indisponíveis.", error);
+      }
+    }
+
+    syncFirestoreCategorias();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem("tia-financeira-theme", theme);
   }, [theme]);
 
@@ -388,6 +428,81 @@ function App() {
     if (!window.confirm("Tem certeza que quer excluir este lançamento?"))
       return;
     setLancamentos((prev) => prev.filter((item) => item.id !== id));
+  }
+
+  async function createCategoria(nome, tipo = "saida") {
+    const valor = String(nome || "").trim();
+    if (!valor) {
+      throw new Error("Informe um nome para a categoria.");
+    }
+
+    const duplicada = categorias.some(
+      (categoria) =>
+        categoria.tipo === tipo &&
+        categoria.nome.toLowerCase() === valor.toLowerCase(),
+    );
+
+    if (duplicada) {
+      return categorias.find(
+        (categoria) =>
+          categoria.tipo === tipo &&
+          categoria.nome.toLowerCase() === valor.toLowerCase(),
+      );
+    }
+
+    try {
+      const docRef = await addDoc(collection(db, "categorias"), {
+        nome: valor,
+        tipo,
+      });
+
+      const novaCategoria = { id: docRef.id, nome: valor, tipo };
+      setCategorias((prev) => [...prev, novaCategoria]);
+      return novaCategoria;
+    } catch (error) {
+      console.warn("Não foi possível salvar a categoria no Firestore.", error);
+      const localCategoria = { id: generateId(), nome: valor, tipo };
+      setCategorias((prev) => [...prev, localCategoria]);
+      return localCategoria;
+    }
+  }
+
+  async function saveExtractedLancamentos(itens) {
+    if (!itens?.length) return;
+
+    const payloads = [];
+
+    for (const item of itens) {
+      let categoriaId = item.categoriaId;
+
+      if (!categoriaId) {
+        const categoria = await createCategoria(
+          item.categoria_sugerida ||
+            (item.tipo === "entrada" ? "Outros Ganhos" : "Outros Gastos"),
+          item.tipo,
+        );
+        categoriaId = categoria.id;
+      }
+
+      payloads.push({
+        tipo: item.tipo,
+        valor: Number(item.valor || 0),
+        categoriaId,
+        data: item.data,
+        descricao: String(item.descricao || "").trim(),
+      });
+    }
+
+    const savedRef = await Promise.all(
+      payloads.map((payload) => addDoc(collection(db, "lancamentos"), payload)),
+    );
+
+    const lancamentosSalvos = savedRef.map((ref, index) => ({
+      id: ref.id,
+      ...payloads[index],
+    }));
+
+    setLancamentos((prev) => [...prev, ...lancamentosSalvos]);
   }
 
   function saveCategoria(event) {
@@ -1279,6 +1394,7 @@ function App() {
           { key: "lancamentos", label: "Lançamentos" },
           { key: "categorias", label: "Categorias" },
           { key: "calendario", label: "Calendário" },
+          { key: "impressao", label: "Impressão" },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -1293,7 +1409,9 @@ function App() {
                   ? "📊︎"
                   : tab.key === "categorias"
                     ? "🏷︎"
-                    : "📅︎"}
+                    : tab.key === "calendario"
+                      ? "📅︎"
+                      : "🖨︎"}
             </span>
             <span>{tab.label}</span>
           </button>
@@ -1365,6 +1483,13 @@ function App() {
         {currentTab === "resumo" && renderResumoTab()}
         {currentTab === "categorias" && renderCategoriasTab()}
         {currentTab === "calendario" && renderCalendarioTab()}
+        {currentTab === "impressao" && (
+          <ImpressaoTab
+            categorias={categorias}
+            onSave={saveExtractedLancamentos}
+            onCreateCategoria={createCategoria}
+          />
+        )}
       </main>
 
       <button
