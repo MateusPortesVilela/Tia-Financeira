@@ -8,12 +8,15 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:api": "node server.js",
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.8.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "firebase": "^12.18.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
