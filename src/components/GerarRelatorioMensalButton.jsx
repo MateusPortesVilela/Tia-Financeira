@@ -6,9 +6,10 @@ import { RelatorioMensalPDF } from "./RelatorioMensalPDF";
 export function GerarRelatorioMensalButton({
   mes,
   ano,
+  dadosLocais,
   label = "Gerar Relatório do Mês",
 }) {
-  const { data, loading, error } = useMonthlyReport(mes, ano);
+  const { data, loading, error } = useMonthlyReport(mes, ano, dadosLocais);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerate = async () => {

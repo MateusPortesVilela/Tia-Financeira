@@ -274,8 +274,9 @@ function organizarDadosMensais({
   };
 }
 
-// Hook que recebe o mês (0 a 11) e o ano; retorna { data, loading, error } para a interface.
-export function useMonthlyReport(mes, ano) {
+// Recebe mês (0 a 11), ano e dadosLocais opcional; sem listas locais, consulta Firestore e documento legado.
+// Retorna { data, loading, error } para a interface.
+export function useMonthlyReport(mes, ano, dadosLocais = null) {
   // data recebe o relatório pronto ou null enquanto não há resultado.
   const [data, setData] = useState(null);
   // loading indica se a consulta e a organização estão em andamento.
@@ -305,30 +306,32 @@ export function useMonthlyReport(mes, ano) {
         const inicio = new Date(ano, mes, 1, 0, 0, 0, 0);
         const fim = new Date(ano, mes + 1, 0, 23, 59, 59, 999);
 
-        // Será preenchido pela consulta atual ou pelo fallback legado.
-        let dados = null;
+        // Prioriza as listas já carregadas pela tela, evitando uma segunda leitura do Firestore.
+        let dados = dadosLocais;
 
-        // Tenta primeiro o modelo atual dividido em coleções.
-        try {
-          dados = await buscarDadosPorColecoes(inicio, fim);
-        } catch (errorColecao) {
-          // Registra a falha da consulta atual e tenta manter compatibilidade com o documento antigo.
-          console.warn(
-            "Não foi possível consultar as coleções; usando fallback do documento legado.",
-            errorColecao,
-          );
-          dados = null;
-        }
+        if (!dados) {
+          // Sem dados locais, tenta o modelo atual dividido em coleções.
+          try {
+            dados = await buscarDadosPorColecoes(inicio, fim);
+          } catch (errorColecao) {
+            // Registra a falha da consulta atual e tenta manter compatibilidade com o documento antigo.
+            console.warn(
+              "Não foi possível consultar as coleções; usando fallback do documento legado.",
+              errorColecao,
+            );
+            dados = null;
+          }
 
-        // Usa o documento antigo se a consulta falhou ou se todas as coleções retornaram vazias.
-        // Se o fallback também falhar, o catch externo define o estado de erro do hook.
-        if (
-          !dados ||
-          (!dados.lancamentos.length &&
-            !dados.compromissos.length &&
-            !dados.categorias.length)
-        ) {
-          dados = await buscarDadosLegado();
+          // Usa o documento antigo se a consulta falhou ou se todas as coleções retornaram vazias.
+          // Se o fallback também falhar, o catch externo define o estado de erro do hook.
+          if (
+            !dados ||
+            (!dados.lancamentos.length &&
+              !dados.compromissos.length &&
+              !dados.categorias.length)
+          ) {
+            dados = await buscarDadosLegado();
+          }
         }
 
         // Monta um relatório válido mesmo quando alguma lista não veio preenchida.
@@ -368,7 +371,7 @@ export function useMonthlyReport(mes, ano) {
     return () => {
       isMounted = false;
     };
-  }, [mes, ano]);
+  }, [mes, ano, dadosLocais]);
 
   // Expõe os três estados consumidos pela tela que chama o hook.
   return { data, loading, error };

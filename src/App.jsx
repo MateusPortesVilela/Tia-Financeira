@@ -177,6 +177,12 @@ function App() {
     }
   });
 
+  // Compartilha com o relatório as mesmas listas carregadas e atualizadas pela tela.
+  const dadosRelatorio = useMemo(
+    () => ({ lancamentos, categorias, compromissos }),
+    [lancamentos, categorias, compromissos],
+  );
+
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [currentTab, setCurrentTab] = useState("lancamentos");
@@ -800,6 +806,7 @@ function App() {
             <GerarRelatorioMensalButton
               mes={currentMonth}
               ano={currentYear}
+              dadosLocais={dadosRelatorio}
               label="Formatar em PDF"
             />
           </div>
@@ -1034,6 +1041,7 @@ function App() {
           <GerarRelatorioMensalButton
             mes={currentMonth}
             ano={currentYear}
+            dadosLocais={dadosRelatorio}
             label="Formatar em PDF"
           />
         </div>
